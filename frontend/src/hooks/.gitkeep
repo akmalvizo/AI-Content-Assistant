@@ -1,0 +1,4 @@
+# Placeholder — custom React hooks will be added in Phase 2.
+# Example hooks planned:
+#   useChatScroll.js  — auto-scroll to latest message
+#   useLocalStorage.js — persist settings in localStorage

@@ -1,0 +1,35 @@
+# render.yaml
+# Render deployment configuration for AI Content Assistant backend.
+# Render reads this file to configure the web service automatically.
+# Docs: https://render.com/docs/yaml-spec
+
+services:
+  - type: web
+    name: ai-content-assistant-api
+    runtime: python
+    region: oregon          # Choose the region closest to your users
+    plan: free              # Change to 'starter' or higher for production
+
+    # Build command: install dependencies into the virtual environment
+    buildCommand: "pip install -r requirements.txt"
+
+    # Start command: launch Uvicorn ASGI server
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+
+    # Health check path — Render pings this to verify the service is up
+    healthCheckPath: /api/health
+
+    # Environment variables — set sensitive values in the Render dashboard
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DEBUG
+        value: "False"
+      - key: APP_NAME
+        value: AI Content Assistant
+      - key: LLM_API_KEY
+        sync: false          # Mark as secret — set manually in Render dashboard
+      - key: LLM_MODEL
+        value: gpt-4o
+      - key: CORS_ORIGINS
+        sync: false          # Set to your Vercel frontend URL in the dashboard
