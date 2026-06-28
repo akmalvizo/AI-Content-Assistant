@@ -10,3 +10,6 @@ pydantic-settings==2.3.1
 
 # Environment variable loading
 python-dotenv==1.0.1
+
+# Groq AI SDK — official Python client (requires httpx >= 0.28)
+groq==1.5.0

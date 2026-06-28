@@ -39,10 +39,10 @@ app = FastAPI(
     title=settings.APP_NAME,
     description=(
         "AI Content Assistant API.\n\n"
-        "Phase 4: Frontend ↔ Backend integration with mock responses.\n"
-        "Phase 5 will replace the mock service with Groq LLM."
+        "Phase 5: Groq AI integration — llama-3.3-70b-versatile.\n"
+        "POST /api/chat returns real AI-generated content responses."
     ),
-    version="0.4.0",
+    version="0.5.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )

@@ -28,5 +28,7 @@ def setup_logging(level: str = "INFO") -> None:
     # Suppress noisy third-party loggers
     logging.getLogger("uvicorn.access").setLevel(logging.WARNING)
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+    logging.getLogger("groq._base_client").setLevel(logging.WARNING)
 
     logging.getLogger(__name__).info("Logging initialised at level: %s", level.upper())
