@@ -36,7 +36,7 @@ const NAV_ICONS = {
 };
 
 function Sidebar() {
-  const { state, dispatch } = useChat();
+  const { state, dispatch, clearChat } = useChat();
   const isDark = state.theme === 'dark';
 
   const base = isDark
@@ -49,7 +49,7 @@ function Sidebar() {
   const divider    = isDark ? 'border-zinc-800' : 'border-slate-200';
 
   const handleNewChat = () => {
-    dispatch({ type: 'CLEAR_CHAT' });
+    clearChat();
     dispatch({ type: 'CLOSE_SIDEBAR' });
   };
 

@@ -64,6 +64,8 @@ export const promptSuggestions = [
 ];
 
 // ─── Sample Conversation Messages ─────────────────────────────────────────────
+// Kept for reference / Storybook / testing.
+// The live app starts with an empty message list (welcome screen shown).
 
 export const sampleMessages = [
   {

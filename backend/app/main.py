@@ -1,27 +1,53 @@
 """
 app/main.py
 -----------
-Entry point for the AI Content Assistant FastAPI application.
-Registers routers, configures CORS middleware, and exposes the root endpoint.
+FastAPI application factory for AI Content Assistant.
+
+Startup order:
+  1. Configure logging
+  2. Create the FastAPI instance
+  3. Register CORS middleware
+  4. Register global exception handlers
+  5. Include routers
+  6. Expose the root endpoint
 """
+
+import logging
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
+from fastapi.exceptions import RequestValidationError
 
-from app.routes import health
 from app.config import settings
+from app.routes import chat, health
+from app.utils.logging_config import setup_logging
+from app.utils.exception_handlers import (
+    http_exception_handler,
+    validation_exception_handler,
+    unhandled_exception_handler,
+)
 
-# ─── Application Instance ─────────────────────────────────────────────────────
+# ─── 1. Logging ───────────────────────────────────────────────────────────────
+
+setup_logging(level="DEBUG" if settings.DEBUG else "INFO")
+logger = logging.getLogger(__name__)
+
+# ─── 2. Application ───────────────────────────────────────────────────────────
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description="AI Content Assistant API — powered by FastAPI",
-    version="0.1.0",
+    description=(
+        "AI Content Assistant API.\n\n"
+        "Phase 4: Frontend ↔ Backend integration with mock responses.\n"
+        "Phase 5 will replace the mock service with Groq LLM."
+    ),
+    version="0.4.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
 
-# ─── CORS Middleware ──────────────────────────────────────────────────────────
+# ─── 3. CORS ──────────────────────────────────────────────────────────────────
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,15 +57,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ─── Routers ──────────────────────────────────────────────────────────────────
+# ─── 4. Exception handlers ────────────────────────────────────────────────────
 
-# Health check — active
-app.include_router(health.router, tags=["Health"])
+app.add_exception_handler(StarletteHTTPException,   http_exception_handler)
+app.add_exception_handler(RequestValidationError,   validation_exception_handler)
+app.add_exception_handler(Exception,                unhandled_exception_handler)
 
-# Chat — registered but empty; will be wired in Phase 3
-# app.include_router(chat.router, prefix="/api", tags=["Chat"])
+# ─── 5. Routers ───────────────────────────────────────────────────────────────
 
-# ─── Root Endpoint ────────────────────────────────────────────────────────────
+app.include_router(health.router,          tags=["Health"])
+app.include_router(chat.router, prefix="/api", tags=["Chat"])
+
+logger.info("Routers registered: /health · /api/chat")
+
+# ─── 6. Root ──────────────────────────────────────────────────────────────────
 
 @app.get("/", tags=["Root"])
 async def root():
