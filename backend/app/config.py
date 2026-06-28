@@ -21,20 +21,21 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"  # development | staging | production
     DEBUG: bool = True
 
-    # API
-    API_PREFIX: str = "/api"
+    # Server
+    HOST: str = "0.0.0.0"
+    PORT: int = 8000
 
-    # CORS — comma-separated list of allowed origins
+    # CORS — list of allowed frontend origins
     CORS_ORIGINS: List[str] = ["http://localhost:5173"]
 
-    # LLM Provider (placeholder — Phase 2)
-    LLM_API_KEY: str = ""
-    LLM_MODEL: str = "gpt-4o"
+    # LLM Provider — populated in Phase 3
+    GROQ_API_KEY: str = ""
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
+    model_config = {
+        "env_file": ".env",
+        "env_file_encoding": "utf-8",
+        "case_sensitive": True,
+    }
 
 
 # Singleton settings instance — import this throughout the app

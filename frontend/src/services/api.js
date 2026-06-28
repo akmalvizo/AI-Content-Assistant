@@ -1,8 +1,7 @@
 /**
  * services/api.js
  * Axios HTTP client for AI Content Assistant.
- * Provides a pre-configured instance and placeholder service functions
- * for communicating with the FastAPI backend.
+ * Exports a pre-configured Axios instance and typed service functions.
  */
 
 import axios from 'axios';
@@ -11,25 +10,21 @@ import axios from 'axios';
 
 /**
  * apiClient — shared Axios instance.
- * Base URL is pulled from the Vite environment variable.
+ * Base URL is read from the Vite environment variable VITE_API_URL.
  */
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30-second request timeout
+  timeout: 30000,
 });
 
 // ─── Request Interceptor ───────────────────────────────────────────────────────
 
-/**
- * Attach auth tokens or request metadata before each request.
- * Placeholder: authentication headers will be added in Phase 3.
- */
 apiClient.interceptors.request.use(
   (config) => {
-    // TODO: attach Bearer token from auth context (Phase 3)
+    // TODO: attach Bearer token (Phase 3)
     return config;
   },
   (error) => Promise.reject(error)
@@ -37,43 +32,31 @@ apiClient.interceptors.request.use(
 
 // ─── Response Interceptor ─────────────────────────────────────────────────────
 
-/**
- * Centralized error handling for all API responses.
- * Placeholder: toast notifications and token refresh will be added in Phase 3.
- */
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    // TODO: handle 401 / 403 / 500 globally (Phase 3)
-    return Promise.reject(error);
-  }
+  (response) => response.data,   // unwrap .data so callers get the payload directly
+  (error) => Promise.reject(error)
 );
 
 // ─── Service Functions ─────────────────────────────────────────────────────────
 
 /**
- * sendMessage — placeholder function to POST a user message to the backend.
- * Will be implemented in Phase 2.
+ * checkHealth — calls GET /health and returns the status payload.
  *
- * @param {string} message - The user's input text
- * @returns {Promise<object>} AI response object
+ * @returns {Promise<{ status: string }>}
  */
-export async function sendMessage(message) {
-  // TODO: implement in Phase 2
-  // return apiClient.post('/api/chat', { message });
-  throw new Error('sendMessage is not yet implemented');
+export async function checkHealth() {
+  return apiClient.get('/health');
 }
 
 /**
- * checkHealth — placeholder function to verify the backend is reachable.
- * Will be implemented in Phase 2.
+ * sendMessage — placeholder for POST /api/chat (Phase 3).
  *
- * @returns {Promise<object>} Health status object
+ * @param {string} message
+ * @returns {Promise<{ reply: string }>}
  */
-export async function checkHealth() {
-  // TODO: implement in Phase 2
-  // return apiClient.get('/api/health');
-  throw new Error('checkHealth is not yet implemented');
+export async function sendMessage(message) {
+  // TODO: implement in Phase 3
+  return apiClient.post('/api/chat', { message });
 }
 
 export default apiClient;

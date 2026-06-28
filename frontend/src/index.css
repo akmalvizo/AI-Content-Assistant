@@ -1,0 +1,10 @@
+/*
+ * src/index.css
+ * Global stylesheet for AI Content Assistant.
+ * Injects Tailwind's base reset, component utilities, and helper classes.
+ * No custom CSS — all styling is done via Tailwind utility classes.
+ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
