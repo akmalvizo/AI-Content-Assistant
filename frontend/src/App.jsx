@@ -1,7 +1,6 @@
 /**
  * App.jsx
- * Root application component for AI Content Assistant.
- * Wraps the app in the ChatContext provider and renders the Home page.
+ * Root component — wraps the entire app in ChatProvider and renders Home.
  */
 
 import React from 'react';

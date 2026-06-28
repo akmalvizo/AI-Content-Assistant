@@ -1,50 +1,79 @@
 /**
  * context/ChatContext.jsx
- * Global chat state context for AI Content Assistant.
- * Provides conversation state and dispatch actions to all child components.
+ * Global state context for AI Content Assistant.
+ * Holds all UI + chat state and exposes it via the useChat() hook.
+ * Logic / API calls will be wired in Phase 4 — this is UI-ready placeholder state.
  */
 
 import React, { createContext, useContext, useReducer } from 'react';
+import { sampleMessages } from '../data/mockChats.js';
 
-// ─── Context Creation ──────────────────────────────────────────────────────────
+// ─── Context ──────────────────────────────────────────────────────────────────
 
 const ChatContext = createContext(null);
 
-// ─── Initial State ─────────────────────────────────────────────────────────────
+// ─── Initial State ────────────────────────────────────────────────────────────
 
-/**
- * Initial shape of the chat state.
- * Will be expanded with conversation history, loading flags, etc. in Phase 2.
- */
 const initialState = {
-  messages:  [],   // Array of { id, role, content } message objects
-  isLoading: false, // True while awaiting an AI response
-  error:     null,  // Holds any error message string
+  /** Array of { id, role, content, timestamp } — pre-loaded with mock data */
+  messages: sampleMessages,
+
+  /** True while the AI is generating a response */
+  isLoading: false,
+
+  /** Active error message string, or null */
+  error: null,
+
+  /** ID of the currently selected conversation */
+  selectedChat: "c1",
+
+  /** 'light' | 'dark' — toggled by the Navbar theme button */
+  theme: "dark",
+
+  /** Whether the sidebar is open on mobile */
+  sidebarOpen: false,
 };
 
-// ─── Reducer ───────────────────────────────────────────────────────────────────
+// ─── Reducer ──────────────────────────────────────────────────────────────────
 
-/**
- * chatReducer — pure function that computes the next state.
- * Action types will be defined and implemented in Phase 2.
- *
- * @param {object} state   - Current state
- * @param {object} action  - Dispatched action { type, payload }
- */
 function chatReducer(state, action) {
   switch (action.type) {
-    // TODO: ADD_MESSAGE, SET_LOADING, SET_ERROR, CLEAR_CHAT — Phase 2
+    case "SET_THEME":
+      return { ...state, theme: action.payload };
+
+    case "TOGGLE_SIDEBAR":
+      return { ...state, sidebarOpen: !state.sidebarOpen };
+
+    case "CLOSE_SIDEBAR":
+      return { ...state, sidebarOpen: false };
+
+    case "SELECT_CHAT":
+      return { ...state, selectedChat: action.payload, sidebarOpen: false };
+
+    case "SET_MESSAGES":
+      return { ...state, messages: action.payload };
+
+    case "ADD_MESSAGE":
+      return { ...state, messages: [...state.messages, action.payload] };
+
+    case "SET_LOADING":
+      return { ...state, isLoading: action.payload };
+
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+
+    case "CLEAR_CHAT":
+      return { ...state, messages: [], selectedChat: null };
+
     default:
       return state;
   }
 }
 
-// ─── Provider ──────────────────────────────────────────────────────────────────
+// ─── Provider ─────────────────────────────────────────────────────────────────
 
 /**
- * ChatProvider — wraps the app and exposes chat state + dispatch.
- *
- * @param {React.ReactNode} children
+ * ChatProvider — wraps the app and makes state available to all children.
  */
 export function ChatProvider({ children }) {
   const [state, dispatch] = useReducer(chatReducer, initialState);
@@ -56,18 +85,16 @@ export function ChatProvider({ children }) {
   );
 }
 
-// ─── Custom Hook ───────────────────────────────────────────────────────────────
+// ─── Hook ─────────────────────────────────────────────────────────────────────
 
 /**
- * useChat — convenience hook for consuming ChatContext.
- * Throws if used outside of <ChatProvider />.
+ * useChat — consume ChatContext in any component.
+ * Throws if used outside <ChatProvider>.
  */
 export function useChat() {
-  const context = useContext(ChatContext);
-  if (!context) {
-    throw new Error('useChat must be used within a <ChatProvider>');
-  }
-  return context;
+  const ctx = useContext(ChatContext);
+  if (!ctx) throw new Error('useChat must be used inside <ChatProvider>');
+  return ctx;
 }
 
 export default ChatContext;
