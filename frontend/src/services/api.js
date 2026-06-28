@@ -1,59 +1,60 @@
 /**
  * services/api.js
- * Base Axios instance for AI Content Assistant.
+ * Axios instance for AI Content Assistant.
  *
- * URL strategy:
- *   Development  →  VITE_API_URL is set to http://localhost:8000 in .env.
- *                   The Vite dev server proxy rewrites /api/* → backend,
- *                   so both absolute and relative requests work locally.
- *   Production   →  VITE_API_URL is set to the Render backend URL in Vercel
- *                   environment variables.
+ * URL strategy
+ * ─────────────
+ * Development  → VITE_API_URL is empty in .env
+ *                Axios uses baseURL = '' (relative URLs)
+ *                Vite proxy intercepts /api/* and /health → localhost:8000
+ *                Result: no CORS, no direct connection to 8000 from browser
  *
- * Never call this directly from components — use chatService.js instead.
+ * Production   → VITE_API_URL = https://your-app.onrender.com (set in Vercel)
+ *                Axios uses that as baseURL for all requests
+ *
+ * This means the browser NEVER makes a direct connection to port 8000.
+ * All traffic goes through the Vite proxy in dev.
  */
 
 import axios from 'axios';
 
-// ─── Base URL ─────────────────────────────────────────────────────────────────
-// Reads VITE_API_URL from the .env file.
-// Falls back to empty string so the Vite proxy handles routing in dev.
-const BASE_URL = import.meta.env.VITE_API_URL || '';
-
-// ─── Axios instance ───────────────────────────────────────────────────────────
+// Empty string in dev → relative URLs → Vite proxy takes over
+// Full URL in prod    → direct requests to Render backend
+const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30_000, // 30 s
+  timeout: 30_000,
   withCredentials: false,
 });
 
 // ─── Request interceptor ──────────────────────────────────────────────────────
 
 apiClient.interceptors.request.use(
-  (config) => {
-    // Phase 6: attach Authorization header here when auth is added
-    return config;
-  },
+  (config) => config,
   (error) => Promise.reject(error)
 );
 
 // ─── Response interceptor ─────────────────────────────────────────────────────
 
 apiClient.interceptors.response.use(
-  // Unwrap the JSON payload so callers receive it directly (no .data access needed)
   (response) => response.data,
 
   (error) => {
-    if (error.code === 'ERR_NETWORK' || error.code === 'ERR_CONNECTION_REFUSED') {
-      const msg = 'Cannot reach the server. Make sure the backend is running on port 8000.';
-      const e      = new Error(msg);
+    // Network / connection errors — backend not running
+    if (
+      error.code === 'ERR_NETWORK' ||
+      error.code === 'ERR_CONNECTION_REFUSED' ||
+      error.code === 'ECONNREFUSED'
+    ) {
+      const e      = new Error('Cannot connect to the server. Please make sure the backend is running.');
       e.isApiError = true;
       e.status     = 0;
       return Promise.reject(e);
     }
 
-    // Normalise all other errors into a single Error shape
+    // HTTP errors — server responded with 4xx / 5xx
     const serverMsg =
       error?.response?.data?.message ||
       error?.response?.data?.detail  ||
@@ -68,13 +69,8 @@ apiClient.interceptors.response.use(
   }
 );
 
-// ─── Standalone helpers ───────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-/**
- * checkHealth — GET /health
- * Used by the Phase 2 landing page health-check button.
- * @returns {Promise<{ status: string }>}
- */
 export async function checkHealth() {
   return apiClient.get('/health');
 }
