@@ -11,5 +11,15 @@ pydantic-settings==2.3.1
 # Environment variable loading
 python-dotenv==1.0.1
 
-# Groq AI SDK — official Python client (requires httpx >= 0.28)
+# Groq AI SDK
 groq==1.5.0
+
+# ── Database ──────────────────────────────────────────────────────────────────
+# SQLAlchemy ORM (async-capable)
+sqlalchemy==2.0.36
+
+# Async PostgreSQL driver (used by SQLAlchemy async engine)
+asyncpg==0.30.0
+
+# Alembic migrations
+alembic==1.14.0

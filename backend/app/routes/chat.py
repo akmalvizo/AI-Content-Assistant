@@ -1,14 +1,8 @@
 """
 app/routes/chat.py
 ------------------
-Chat API route for AI Content Assistant.
-
-Responsibility of this module:
-  1. Receive and validate the request (Pydantic handles this automatically).
-  2. Delegate to ChatService.
-  3. Return the response.
-
-No business logic lives here — all logic is in app/services/chat_service.py.
+Chat API route. Receives, validates, delegates, returns.
+No business logic lives here.
 """
 
 import logging
@@ -26,8 +20,8 @@ router = APIRouter()
     response_model=ChatResponse,
     summary="Send a chat message",
     description=(
-        "Accepts a user message and returns an AI-generated response. "
-        "Currently returns mock responses — Groq integration added in Phase 5."
+        "Accepts a user message and an optional content mode, "
+        "returns an AI-generated response tailored to that mode."
     ),
 )
 async def send_message(request: ChatRequest) -> ChatResponse:
@@ -35,14 +29,20 @@ async def send_message(request: ChatRequest) -> ChatResponse:
     POST /api/chat
 
     Request body:
-        { "message": "Write a LinkedIn post about AI." }
+        { "message": "Write a LinkedIn post about AI.", "mode": "linkedin" }
 
     Response:
-        { "response": "...", "timestamp": "...", "model": "mock-v1" }
+        { "response": "...", "timestamp": "...", "model": "...", "mode": "linkedin" }
     """
-    logger.info("POST /api/chat | message_length=%d", len(request.message))
+    logger.info(
+        "POST /api/chat | mode=%s | message_length=%d",
+        request.mode, len(request.message),
+    )
 
     response = await chat_service.generate_response(request)
 
-    logger.info("POST /api/chat | responded with model=%s", response.model)
+    logger.info(
+        "POST /api/chat | mode=%s | model=%s | response_length=%d",
+        response.mode, response.model, len(response.response),
+    )
     return response

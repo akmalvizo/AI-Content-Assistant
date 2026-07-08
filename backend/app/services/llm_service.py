@@ -1,58 +1,32 @@
 """
 app/services/llm_service.py
 ----------------------------
-LLM integration layer for AI Content Assistant.
+LLM integration layer — the ONLY file that knows about Groq.
 
-*** PROVIDER SWAP POINT ***
-This is the ONLY file in the entire codebase that knows about Groq.
-To switch to OpenAI, Gemini, or any other provider:
-  1. Replace the import and client initialisation below.
-  2. Update `_call_api()` to match the new SDK's call signature.
-  3. Keep `complete()` signature identical — no other file changes.
+Phase 6 change: added `complete_with_messages()` so ChatService can pass
+pre-built messages from PromptService. The old `complete()` method is kept
+for backward-compatibility.
 
-Responsibilities:
-  - Validate that the API key is configured at startup.
-  - Initialise the async Groq client once (module-level singleton).
-  - Send a structured message list to the Groq Chat Completions API.
-  - Extract and return the response text.
-  - Map every known Groq / network error to a clean, user-safe message.
-  - Never log or surface the API key.
+To swap providers: replace imports + client init + _call_api(). Nothing else.
 """
 
 import logging
 import time
 
-from groq import AsyncGroq, APIConnectionError, APIStatusError, APITimeoutError, \
-                 RateLimitError, AuthenticationError
+from groq import (
+    AsyncGroq,
+    APIConnectionError,
+    APIStatusError,
+    APITimeoutError,
+    RateLimitError,
+    AuthenticationError,
+)
 
 from app.config import settings
 
 logger = logging.getLogger(__name__)
 
-# ─── System prompt ────────────────────────────────────────────────────────────
-# Stored as a module-level constant for easy editing without touching logic.
-
-SYSTEM_PROMPT = """You are AI Content Assistant, an expert AI specialized in content creation.
-
-You help users create:
-- Blog posts
-- LinkedIn posts
-- Instagram captions
-- YouTube scripts
-- SEO articles
-- Product descriptions
-- Marketing copy
-- Professional emails
-- Content rewriting
-
-Always write original, engaging, human-like content.
-Maintain professional formatting.
-Use headings, bullet points, and clear structure whenever appropriate.
-
-If a request is outside content creation, politely answer it but guide \
-the conversation back toward your specialization."""
-
-# ─── User-safe error messages — never exposes internals ──────────────────────
+# ── User-safe error messages ──────────────────────────────────────────────────
 
 _ERROR_MESSAGES = {
     "auth":       "AI service authentication failed. Please contact support.",
@@ -69,22 +43,13 @@ class LLMService:
     """
     LLMService — async wrapper around the Groq Chat Completions API.
 
-    Usage (via the module-level singleton `llm_service`):
-        reply = await llm_service.complete(user_message)
+    Phase 6: accepts pre-built message lists from PromptService via
+    `complete_with_messages()`. The old `complete()` helper is retained.
     """
 
     def __init__(self) -> None:
-        """
-        Initialise the async Groq client.
-
-        Logs a warning if the key is absent so the app starts cleanly;
-        the error surfaces in the response when a request is made.
-        """
         if not settings.GROQ_API_KEY:
-            logger.warning(
-                "LLMService: GROQ_API_KEY is not set — "
-                "chat requests will return an error until the key is configured."
-            )
+            logger.warning("LLMService: GROQ_API_KEY is not set.")
             self._client: AsyncGroq | None = None
         else:
             self._client = AsyncGroq(api_key=settings.GROQ_API_KEY)
@@ -97,53 +62,48 @@ class LLMService:
 
     # ── Public interface ──────────────────────────────────────────────────────
 
-    async def complete(self, user_message: str) -> str:
+    async def complete_with_messages(self, messages: list[dict]) -> str:
         """
-        Send a user message to Groq and return the assistant's reply.
-
-        Builds the full message list (system prompt + user turn) and
-        delegates to `_call_api`.
+        Send a pre-built messages list to the LLM.
+        Called by ChatService after PromptService builds the messages.
 
         Args:
-            user_message: Sanitised user input from ChatService.
+            messages: Full [{"role": ..., "content": ...}, ...] list.
 
         Returns:
-            AI-generated response text (stripped).
+            Stripped response text.
 
         Raises:
-            RuntimeError: User-safe error string — caught by ChatService.
+            RuntimeError: User-safe error message.
         """
         if self._client is None:
             raise RuntimeError(_ERROR_MESSAGES["no_key"])
+        return await self._call_api(messages)
 
+    async def complete(self, user_message: str, system_prompt: str) -> str:
+        """
+        Backward-compatible method — builds a simple [system, user] list
+        and calls the API. Not used by ChatService in Phase 6 but kept
+        for any direct callers or tests.
+        """
+        if self._client is None:
+            raise RuntimeError(_ERROR_MESSAGES["no_key"])
         messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "system", "content": system_prompt},
             {"role": "user",   "content": user_message},
         ]
-
         return await self._call_api(messages)
 
     # ── Private helpers ───────────────────────────────────────────────────────
 
     async def _call_api(self, messages: list[dict]) -> str:
-        """
-        Execute the async Groq API call.
-
-        Args:
-            messages: Full message list including the system prompt.
-
-        Returns:
-            Stripped response content string.
-
-        Raises:
-            RuntimeError: Mapped user-safe error.
-        """
         t_start = time.perf_counter()
 
+        # Log the last user message length (not content in production)
+        user_chars = len(messages[-1]["content"]) if messages else 0
         logger.info(
             "LLMService: → Groq request | model=%s | user_chars=%d",
-            settings.GROQ_MODEL,
-            len(messages[-1]["content"]),
+            settings.GROQ_MODEL, user_chars,
         )
 
         try:
@@ -158,42 +118,31 @@ class LLMService:
             elapsed_ms    = int((time.perf_counter() - t_start) * 1000)
 
             logger.info(
-                "LLMService: ← Groq response | model=%s | elapsed_ms=%d | response_chars=%d",
-                settings.GROQ_MODEL,
-                elapsed_ms,
-                len(response_text),
+                "LLMService: ← Groq response | elapsed_ms=%d | response_chars=%d",
+                elapsed_ms, len(response_text),
             )
 
             return response_text.strip()
 
         except AuthenticationError:
-            logger.error("LLMService: authentication failed — check GROQ_API_KEY")
+            logger.error("LLMService: authentication failed")
             raise RuntimeError(_ERROR_MESSAGES["auth"])
-
         except RateLimitError:
             logger.warning("LLMService: rate limit exceeded")
             raise RuntimeError(_ERROR_MESSAGES["rate_limit"])
-
         except APIConnectionError:
-            logger.error("LLMService: connection error reaching Groq API")
+            logger.error("LLMService: connection error")
             raise RuntimeError(_ERROR_MESSAGES["connection"])
-
         except APITimeoutError:
             logger.error("LLMService: request timed out")
             raise RuntimeError(_ERROR_MESSAGES["timeout"])
-
         except APIStatusError as exc:
-            logger.error(
-                "LLMService: API status error | status=%s | body=%s",
-                exc.status_code, exc.message,
-            )
+            logger.error("LLMService: API status error | status=%s", exc.status_code)
             raise RuntimeError(_ERROR_MESSAGES["api_error"])
-
         except Exception:
             logger.exception("LLMService: unexpected error")
             raise RuntimeError(_ERROR_MESSAGES["unexpected"])
 
 
-# ── Module-level singleton ────────────────────────────────────────────────────
-# Import `llm_service` wherever needed. Never construct LLMService() again.
+# Module-level singleton
 llm_service = LLMService()

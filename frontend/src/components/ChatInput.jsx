@@ -14,13 +14,15 @@ import React, { useState, useRef, useEffect } from 'react';
 import { HiOutlinePaperAirplane, HiOutlinePaperClip } from 'react-icons/hi';
 import { MdErrorOutline } from 'react-icons/md';
 import { useChat } from '../context/ChatContext.jsx';
+import { getModeById } from '../data/modes.js';
 
 const MAX_CHARS = 5000;
 
 function ChatInput() {
   const { state, sendMessage, dispatch } = useChat();
-  const { isLoading, error, theme } = state;
+  const { isLoading, error, theme, selectedMode } = state;
   const isDark = theme === 'dark';
+  const mode   = getModeById(selectedMode);
 
   const [value, setValue]         = useState('');
   const [isFocused, setIsFocused] = useState(false);
@@ -118,7 +120,7 @@ function ChatInput() {
           onKeyDown={handleKeyDown}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          placeholder={isLoading ? 'Waiting for response…' : 'Message AI Content Assistant…'}
+          placeholder={isLoading ? 'Waiting for response…' : (mode.placeholder || 'Message AI Content Assistant…')}
           aria-label="Message input"
           disabled={isLoading}
           rows={1}

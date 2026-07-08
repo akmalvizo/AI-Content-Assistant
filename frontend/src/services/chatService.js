@@ -1,13 +1,8 @@
 /**
  * services/chatService.js
- * Chat-specific API service for AI Content Assistant.
+ * Chat API service — the only frontend file that knows the endpoint shape.
  *
- * This is the ONLY file that knows the chat endpoint URL and payload shape.
- * Components and context call this module — they never touch Axios directly.
- *
- * Phase 5 swap point:
- *   If the backend endpoint or response schema changes (e.g. streaming),
- *   only this file needs updating. Nothing else changes.
+ * Phase 6: accepts a mode parameter and includes it in the request body.
  */
 
 import apiClient from './api.js';
@@ -15,10 +10,10 @@ import apiClient from './api.js';
 /**
  * sendChatMessage — POST /api/chat
  *
- * @param {string} message - The user's input text.
- * @returns {Promise<{ response: string, timestamp: string, model: string }>}
- * @throws {Error} Normalised error from the Axios response interceptor.
+ * @param {string} message - User input text.
+ * @param {string} mode    - Content mode id (e.g. "linkedin", "blog").
+ * @returns {Promise<{ response: string, timestamp: string, model: string, mode: string }>}
  */
-export async function sendChatMessage(message) {
-  return apiClient.post('/api/chat', { message });
+export async function sendChatMessage(message, mode = 'general') {
+  return apiClient.post('/api/chat', { message, mode });
 }

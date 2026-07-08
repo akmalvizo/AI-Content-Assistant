@@ -2,28 +2,25 @@
  * components/ChatWindow.jsx
  * Main chat area.
  *
- * - Empty messages → PromptCards (welcome / empty state)
- * - Messages present → scrollable list of Message bubbles
- * - isLoading → TypingLoader shown below last message
- * - Auto-scrolls to bottom on new messages and while loading
- * - ChatInput always pinned to the bottom
+ * Phase 6: includes ChatHeader (mode indicator + New Chat button) above the
+ * message list. The welcome screen (PromptCards) is now mode-aware.
  */
 
 import React, { useEffect, useRef } from 'react';
 import { useChat } from '../context/ChatContext.jsx';
 import { scrollToBottom } from '../utils/helpers.js';
+import ChatHeader   from './ChatHeader.jsx';
 import Message      from './Message.jsx';
 import TypingLoader from './TypingLoader.jsx';
 import ChatInput    from './ChatInput.jsx';
 import PromptCards  from './PromptCards.jsx';
 
 function ChatWindow() {
-  const { state }  = useChat();
+  const { state, clearChat } = useChat();
   const { messages, isLoading, theme } = state;
-  const isDark     = theme === 'dark';
-  const bottomRef  = useRef(null);
+  const isDark    = theme === 'dark';
+  const bottomRef = useRef(null);
 
-  // Auto-scroll whenever the message list or loading state changes
   useEffect(() => {
     scrollToBottom(bottomRef);
   }, [messages, isLoading]);
@@ -33,7 +30,10 @@ function ChatWindow() {
   return (
     <div className={`flex flex-col flex-1 h-full min-w-0 ${bgColor}`}>
 
-      {/* ── Scrollable message area ──────────────────────────────────── */}
+      {/* ── Mode header ──────────────────────────────────────────── */}
+      <ChatHeader onNewChat={clearChat} />
+
+      {/* ── Scrollable message area ──────────────────────────────── */}
       <div className="flex-1 overflow-y-auto min-h-0">
         {messages.length === 0 ? (
           <PromptCards />
@@ -42,17 +42,13 @@ function ChatWindow() {
             {messages.map((msg) => (
               <Message key={msg.id} message={msg} />
             ))}
-
-            {/* Typing indicator */}
             {isLoading && <TypingLoader />}
-
-            {/* Scroll anchor */}
             <div ref={bottomRef} aria-hidden="true" />
           </div>
         )}
       </div>
 
-      {/* ── Sticky chat input ────────────────────────────────────────── */}
+      {/* ── Sticky chat input ────────────────────────────────────── */}
       <div className={`
         sticky bottom-0 border-t
         ${isDark ? 'border-zinc-800' : 'border-slate-200'}
