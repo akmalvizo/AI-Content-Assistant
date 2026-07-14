@@ -2,14 +2,7 @@
 app/main.py
 -----------
 FastAPI application factory for AI Content Assistant.
-
-Startup order:
-  1. Configure logging
-  2. Create the FastAPI instance
-  3. Register CORS middleware
-  4. Register global exception handlers
-  5. Include routers
-  6. Expose the root endpoint
+No database. No authentication. Just AI chat.
 """
 
 import logging
@@ -33,16 +26,14 @@ from app.utils.exception_handlers import (
 setup_logging(level="DEBUG" if settings.DEBUG else "INFO")
 logger = logging.getLogger(__name__)
 
+settings.validate_on_startup()
+
 # ─── 2. Application ───────────────────────────────────────────────────────────
 
 app = FastAPI(
     title=settings.APP_NAME,
-    description=(
-        "AI Content Assistant API.\n\n"
-        "Phase 6: Multi-mode Prompt Management System.\n"
-        "POST /api/chat accepts a 'mode' field to select the content generation strategy."
-    ),
-    version="0.6.0",
+    description="AI Content Assistant API — Groq-powered multi-mode content generation.",
+    version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
 )
@@ -65,7 +56,7 @@ app.add_exception_handler(Exception,                unhandled_exception_handler)
 
 # ─── 5. Routers ───────────────────────────────────────────────────────────────
 
-app.include_router(health.router,          tags=["Health"])
+app.include_router(health.router,           tags=["Health"])
 app.include_router(chat.router, prefix="/api", tags=["Chat"])
 
 logger.info("Routers registered: /health · /api/chat")
@@ -74,5 +65,4 @@ logger.info("Routers registered: /health · /api/chat")
 
 @app.get("/", tags=["Root"])
 async def root():
-    """Root endpoint — confirms the API is running."""
     return {"message": "Backend is running successfully."}

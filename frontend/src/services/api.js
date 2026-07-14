@@ -25,7 +25,7 @@ const BASE_URL = import.meta.env.VITE_API_URL ?? '';
 const apiClient = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
-  timeout: 30_000,
+  timeout: 120_000,   // 120 s — Groq can take up to 60 s for long responses
   withCredentials: false,
 });
 
@@ -49,6 +49,14 @@ apiClient.interceptors.response.use(
       error.code === 'ECONNREFUSED'
     ) {
       const e      = new Error('Cannot connect to the server. Please make sure the backend is running.');
+      e.isApiError = true;
+      e.status     = 0;
+      return Promise.reject(e);
+    }
+
+    // Request timed out
+    if (error.code === 'ECONNABORTED') {
+      const e      = new Error('The request timed out. The AI is taking longer than usual — please try again.');
       e.isApiError = true;
       e.status     = 0;
       return Promise.reject(e);

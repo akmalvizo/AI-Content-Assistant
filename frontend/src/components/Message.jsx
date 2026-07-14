@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 import { BsStars } from 'react-icons/bs';
 import {
   HiOutlineClipboard,
-  HiOutlineRefresh,
   HiCheck,
 } from 'react-icons/hi';
 import { useChat } from '../context/ChatContext.jsx';
@@ -110,7 +109,7 @@ function Message({ message }) {
           </div>
         </div>
 
-        {/* Action bar — copy + regenerate */}
+        {/* Action bar — copy only */}
         <div className={`flex items-center gap-1 mt-1.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150`}>
           <button
             onClick={handleCopy}
@@ -121,13 +120,6 @@ function Message({ message }) {
               ? <><HiCheck className="text-emerald-500" /> Copied</>
               : <><HiOutlineClipboard /> Copy</>
             }
-          </button>
-          <button
-            aria-label="Regenerate response"
-            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-colors ${actionBtn}`}
-          >
-            <HiOutlineRefresh />
-            Regenerate
           </button>
           <p className={`ml-auto text-[10px] ${isDark ? 'text-zinc-600' : 'text-slate-400'}`}>
             {message.timestamp}

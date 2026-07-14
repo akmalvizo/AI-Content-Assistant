@@ -1,29 +1,22 @@
 /**
  * components/Sidebar.jsx
- * Collapsible sidebar with real content-mode navigation.
- *
- * Phase 6: modes come from data/modes.js and selecting one calls changeMode()
- * from ChatContext, which instantly switches the prompt strategy and clears
- * the conversation.
+ * Collapsible sidebar with content-mode navigation.
  */
 
 import React from 'react';
-import {
-  MdOutlineSettings, MdOutlineAdd,
-} from 'react-icons/md';
+import { MdOutlineAdd } from 'react-icons/md';
 import {
   BsStars, BsLinkedin, BsYoutube, BsFacebook,
 } from 'react-icons/bs';
 import {
-  HiOutlineDocumentText, HiOutlineSearch, HiOutlineChat,
+  HiOutlineDocumentText, HiOutlineSearch,
   HiOutlineMail, HiOutlinePencilAlt, HiOutlineShoppingBag,
   HiOutlineCamera,
 } from 'react-icons/hi';
 import { useChat } from '../context/ChatContext.jsx';
 import { MODES, getModeById } from '../data/modes.js';
-import { recentChats } from '../data/mockChats.js';
 
-// ─── Icon map (matches modes.js icon keys) ────────────────────────────────────
+// ─── Icon map ─────────────────────────────────────────────────────────────────
 
 const MODE_ICONS = {
   stars:     <BsStars     className="text-base" />,
@@ -38,9 +31,10 @@ const MODE_ICONS = {
   rewrite:   <HiOutlinePencilAlt className="text-base" />,
 };
 
-// ─── Category ordering for the sidebar sections ───────────────────────────────
-
-const CATEGORY_ORDER = ["General", "Writing", "Social Media", "Video", "Business", "Advertising", "E-Commerce", "Editing"];
+const CATEGORY_ORDER = [
+  "General", "Writing", "Social Media", "Video",
+  "Business", "Advertising", "E-Commerce", "Editing",
+];
 
 function groupByCategory(modes) {
   const map = {};
@@ -48,7 +42,6 @@ function groupByCategory(modes) {
     if (!map[m.category]) map[m.category] = [];
     map[m.category].push(m);
   }
-  // Return in defined order, then any extras
   const ordered = [];
   for (const cat of CATEGORY_ORDER) {
     if (map[cat]) ordered.push({ category: cat, modes: map[cat] });
@@ -65,13 +58,11 @@ function Sidebar() {
   const { state, dispatch, changeMode, clearChat } = useChat();
   const isDark = state.theme === 'dark';
 
-  // Styles
-  const base       = isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-100' : 'bg-slate-50 border-slate-200 text-slate-900';
-  const mutedText  = isDark ? 'text-zinc-500' : 'text-slate-400';
-  const hoverItem  = isDark ? 'hover:bg-zinc-800/70' : 'hover:bg-slate-100';
-  const divider    = isDark ? 'border-zinc-800' : 'border-slate-200';
-
-  const activeMode  = state.selectedMode;
+  const base      = isDark ? 'bg-zinc-950 border-zinc-800 text-zinc-100' : 'bg-slate-50 border-slate-200 text-slate-900';
+  const mutedText = isDark ? 'text-zinc-500' : 'text-slate-400';
+  const hoverItem = isDark ? 'hover:bg-zinc-800/70' : 'hover:bg-slate-100';
+  const divider   = isDark ? 'border-zinc-800' : 'border-slate-200';
+  const activeMode = state.selectedMode;
 
   const activeStyle = (modeId) => {
     if (activeMode !== modeId) return `${mutedText} ${hoverItem}`;
@@ -93,7 +84,7 @@ function Sidebar() {
   const sidebarContent = (
     <aside className={`flex flex-col h-full w-64 border-r ${base}`}>
 
-      {/* ── New Chat ──────────────────────────────────────────────── */}
+      {/* ── New Chat ─────────────────────────────────────────── */}
       <div className="p-3">
         <button
           onClick={() => { clearChat(); closeSidebar(); }}
@@ -111,7 +102,7 @@ function Sidebar() {
         </button>
       </div>
 
-      {/* ── Mode navigation ───────────────────────────────────────── */}
+      {/* ── Mode navigation ──────────────────────────────────── */}
       <div className="flex-1 overflow-y-auto min-h-0 px-2 pb-2">
         {GROUPED_MODES.map(({ category, modes }) => (
           <nav key={category} className="mb-3" aria-label={category}>
@@ -139,45 +130,11 @@ function Sidebar() {
             </ul>
           </nav>
         ))}
-
-        {/* ── Recent Chats ──────────────────────────────────────────── */}
-        <div className={`border-t pt-2 mt-1 ${divider}`}>
-          <p className={`px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest ${mutedText}`}>
-            Recent
-          </p>
-          <ul role="list" className="space-y-0.5">
-            {recentChats.slice(0, 5).map((chat) => (
-              <li key={chat.id}>
-                <button
-                  aria-label={`Open chat: ${chat.title}`}
-                  className={`
-                    w-full flex items-start gap-2.5 px-3 py-2 rounded-lg text-sm
-                    transition-colors duration-150 ${mutedText} ${hoverItem}
-                  `}
-                >
-                  <HiOutlineChat className="mt-0.5 shrink-0 text-base" />
-                  <div className="text-left overflow-hidden">
-                    <p className="truncate text-xs font-medium leading-snug">{chat.title}</p>
-                    <p className="text-[10px] opacity-60">{chat.date}</p>
-                  </div>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
       </div>
 
-      {/* ── Footer ───────────────────────────────────────────────── */}
+      {/* ── Footer — user row only ────────────────────────────── */}
       <div className={`p-2 border-t ${divider}`}>
-        <button
-          aria-label="Settings"
-          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm ${mutedText} ${hoverItem} transition-colors`}
-        >
-          <MdOutlineSettings className="text-lg" />
-          <span>Settings</span>
-        </button>
-
-        <div className={`flex items-center gap-3 px-3 py-2 mt-1 rounded-lg ${hoverItem} cursor-pointer transition-colors`}>
+        <div className={`flex items-center gap-3 px-3 py-2 rounded-lg ${hoverItem} cursor-pointer transition-colors`}>
           <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-white text-xs font-bold shrink-0">
             A
           </div>
@@ -187,6 +144,7 @@ function Sidebar() {
           </div>
         </div>
       </div>
+
     </aside>
   );
 

@@ -14,12 +14,19 @@ python-dotenv==1.0.1
 # Groq AI SDK
 groq==1.5.0
 
-# ── Database ──────────────────────────────────────────────────────────────────
-# SQLAlchemy ORM (async-capable)
+# Database — async runtime driver (FastAPI / SQLAlchemy async)
 sqlalchemy==2.0.36
-
-# Async PostgreSQL driver (used by SQLAlchemy async engine)
 asyncpg==0.30.0
+
+# Database — sync driver for Alembic migrations only
+psycopg2-binary==2.9.10
 
 # Alembic migrations
 alembic==1.14.0
+
+# Authentication
+# bcrypt pinned to 4.x — passlib 1.7.4 is not compatible with bcrypt 5.x
+passlib[bcrypt]==1.7.4
+bcrypt==4.2.1
+python-jose[cryptography]==3.3.0
+email-validator==2.1.0
