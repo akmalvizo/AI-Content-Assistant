@@ -29,6 +29,8 @@ _DEFAULT_CORS_ORIGINS: List[str] = [
     "http://127.0.0.1:5173",
     "http://127.0.0.1:5174",
     "https://ai-content-assistant-virid.vercel.app",
+    "https://ai-content-assistant-akmal.vercel.app",
+    "https://ai-content-assistant-akmal.vercel.app",
 ]
 
 
