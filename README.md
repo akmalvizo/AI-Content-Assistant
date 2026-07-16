@@ -1,6 +1,6 @@
 <div align="center">
 
-![AI Content Assistant Banner](./assets/banner.jpeg)
+![AI Content Assistant Banner](docs/assets/banner.png)
 
 # AI Content Assistant
 
@@ -224,10 +224,10 @@ React (ChatContext.sendMessage)
 3. Add environment variable: `VITE_API_URL=https://ai-content-assistant-w2qt.vercel.app/
 4. Deploy
 
-### Backend → Render
+### Backend → Vercel
 1. Import the repository on [Vercel](https://vercel.com/), set **Root Directory** to `backend/`
 2. Add secret: `GROQ_API_KEY=gsk_...`
-3. Add: `CORS_ORIGINS=["(https://ai-content-assistant-akmal.vercel.app/)"]`
+3. Add: `CORS_ORIGINS=https://ai-content-assistant-akmal.vercel.app/
 4. Deploy
 
 **Live app:** [https://ai-content-assistant-akmal.vercel.app/](https://ai-content-assistant-akmal.vercel.app/)
