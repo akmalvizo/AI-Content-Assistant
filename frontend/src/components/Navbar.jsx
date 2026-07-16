@@ -5,7 +5,6 @@
  */
 
 import React from 'react';
-import { BsStars } from 'react-icons/bs';
 import { HiOutlineMenuAlt2 } from 'react-icons/hi';
 import { MdOutlineLightMode, MdOutlineDarkMode } from 'react-icons/md';
 import { useChat } from '../context/ChatContext.jsx';
@@ -47,9 +46,11 @@ function Navbar() {
 
         {/* Logo + name */}
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-sm">
-            <BsStars className="text-white text-sm" />
-          </div>
+          <img
+            src="/logo.png"
+            alt="AI Content Assistant logo"
+            className="w-7 h-7 rounded-lg object-cover shadow-sm"
+          />
           <span className="font-semibold text-sm tracking-tight">
             AI Content Assistant
           </span>

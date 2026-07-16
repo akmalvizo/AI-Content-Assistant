@@ -11,7 +11,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { HiOutlinePaperAirplane, HiOutlinePaperClip } from 'react-icons/hi';
+import { HiOutlinePaperAirplane } from 'react-icons/hi';
 import { MdErrorOutline } from 'react-icons/md';
 import { useChat } from '../context/ChatContext.jsx';
 import { getModeById } from '../data/modes.js';
@@ -72,9 +72,6 @@ function ChatInput() {
   const textColor   = isDark ? 'text-zinc-100' : 'text-slate-900';
   const mutedText   = isDark ? 'text-zinc-600' : 'text-slate-400';
   const placeholder = isDark ? 'placeholder:text-zinc-600' : 'placeholder:text-slate-400';
-  const attachBtn   = isDark
-    ? 'text-zinc-500 hover:text-zinc-300 hover:bg-zinc-800'
-    : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100';
 
   const borderColor = (() => {
     if (overLimit)   return 'border-red-500 ring-2 ring-red-500/20';
@@ -134,15 +131,6 @@ function ChatInput() {
         {/* Bottom bar */}
         <div className="flex items-center gap-2 px-3 pb-2.5">
 
-          {/* Attachment placeholder */}
-          <button
-            aria-label="Attach file (coming soon)"
-            disabled
-            className={`p-1.5 rounded-lg transition-colors ${attachBtn} disabled:opacity-30 disabled:cursor-not-allowed`}
-          >
-            <HiOutlinePaperClip className="text-lg" />
-          </button>
-
           <div className="flex-1" />
 
           {/* Character counter */}
@@ -176,12 +164,6 @@ function ChatInput() {
         </div>
       </div>
 
-      {/* Hint */}
-      <p className={`text-center text-[10px] mt-2 ${mutedText}`}>
-        <kbd className="font-mono">Enter</kbd> to send
-        &nbsp;·&nbsp;
-        <kbd className="font-mono">Shift+Enter</kbd> for new line
-      </p>
     </div>
   );
 }
