@@ -1,19 +1,51 @@
+<div align="center">
+
+![AI Content Assistant Banner](./assets/banner.jpeg)
+
 # AI Content Assistant
 
-A production-ready AI SaaS application for intelligent content generation, powered by Groq (llama-3.3-70b-versatile) and built with React 19 + FastAPI.
+**Your All-in-One AI Writing Partner**
+
+A production-ready AI SaaS application for intelligent content generation, powered by **Groq (llama-3.3-70b-versatile)** and built with **React 19 + FastAPI**.
+
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20App-6366f1?style=for-the-badge&logo=vercel)](https://ai-content-assistant-akmal.vercel.app/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Groq](https://img.shields.io/badge/Groq-LLM%20API-F55036?style=flat-square)](https://groq.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
+
+**🔗 Try it live: [ai-content-assistant-akmal.vercel.app](https://ai-content-assistant-akmal.vercel.app/)**
+
+</div>
 
 ---
 
-## Quick Start
+## ✨ Overview
+
+From blog posts to LinkedIn updates, **AI Content Assistant** helps you write smarter, not harder. It offers 15+ content modes, AI-powered suggestions, and professional templates — all wrapped in a clean, ChatGPT-style interface with light and dark mode.
+
+| Feature | Description |
+|---|---|
+| 🧠 **15+ Content Modes** | Blog posts, SEO copy, LinkedIn posts, Instagram captions, YouTube scripts, emails, ad copy, and more |
+| 💡 **AI-Powered Suggestions** | Smart, context-aware content ideas tailored to each mode |
+| 📄 **Professional Templates** | Ready-to-use prompts and frameworks to get started fast |
+| 🌗 **Light & Dark Mode** | Built for focus and productivity in any environment |
+| 🔒 **Secure & Fast** | Your data is safe with us |
+
+**Designed for:** Creators · Marketers · Entrepreneurs · Professionals
+
+---
+
+## 🚀 Quick Start
 
 ### Prerequisites
+
 | Tool    | Minimum version |
 |---------|-----------------|
 | Python  | 3.10+           |
 | Node.js | 18+             |
 | Git     | any             |
-
----
 
 ### 1 — Clone
 
@@ -21,8 +53,6 @@ A production-ready AI SaaS application for intelligent content generation, power
 git clone <your-repo-url>
 cd AI-Content-Assistant
 ```
-
----
 
 ### 2 — Backend setup
 
@@ -63,8 +93,6 @@ Backend runs at **http://localhost:8000**
 | `/api/chat`   | POST   | Send message, get AI reply   |
 | `/docs`       | GET    | Swagger UI                   |
 
----
-
 ### 3 — Frontend setup
 
 ```bash
@@ -88,8 +116,6 @@ npm run dev
 
 Frontend runs at **http://localhost:5173** (or 5174 if 5173 is occupied)
 
----
-
 ### 4 — Verify everything works
 
 1. Open **http://localhost:5173** (or 5174) in your browser
@@ -99,30 +125,30 @@ Frontend runs at **http://localhost:5173** (or 5174 if 5173 is occupied)
 
 ---
 
-## Environment Variables
+## 🔑 Environment Variables
 
 ### Backend (`backend/.env`)
 
 | Variable           | Required | Default                    | Description                  |
-|--------------------|----------|----------------------------|------------------------------|
-| `GROQ_API_KEY`     | **Yes**  | —                          | Groq API key                 |
-| `HOST`             | No       | `0.0.0.0`                  | Uvicorn bind address         |
-| `PORT`             | No       | `8000`                     | Uvicorn port                 |
-| `GROQ_MODEL`       | No       | `llama-3.3-70b-versatile`  | Groq model identifier        |
-| `GROQ_MAX_TOKENS`  | No       | `1024`                     | Max tokens per response      |
-| `GROQ_TEMPERATURE` | No       | `0.7`                      | Response temperature (0–1)   |
+|--------------------|----------|-----------------------------|-------------------------------|
+| `GROQ_API_KEY`     | **Yes**  | —                           | Groq API key                  |
+| `HOST`             | No       | `0.0.0.0`                   | Uvicorn bind address           |
+| `PORT`             | No       | `8000`                      | Uvicorn port                   |
+| `GROQ_MODEL`       | No       | `llama-3.3-70b-versatile`   | Groq model identifier          |
+| `GROQ_MAX_TOKENS`  | No       | `1024`                      | Max tokens per response        |
+| `GROQ_TEMPERATURE` | No       | `0.7`                       | Response temperature (0–1)     |
 
-Get a free Groq API key at **https://console.groq.com/keys**
+Get a free Groq API key at **[console.groq.com/keys](https://console.groq.com/keys)**
 
 ### Frontend (`frontend/.env`)
 
 | Variable       | Required | Default                  | Description              |
-|----------------|----------|--------------------------|--------------------------|
-| `VITE_API_URL` | No       | `http://localhost:8000`  | FastAPI backend base URL |
+|----------------|----------|---------------------------|----------------------------|
+| `VITE_API_URL` | No       | `http://localhost:8000`   | FastAPI backend base URL   |
 
 ---
 
-## Architecture
+## 🏗️ Architecture
 
 ```
 AI-Content-Assistant/
@@ -162,9 +188,7 @@ AI-Content-Assistant/
     └── requirements.txt
 ```
 
----
-
-## Network Flow
+### Network Flow
 
 ```
 Browser (React)
@@ -187,55 +211,58 @@ FastAPI (Uvicorn)
     ▼
 React (ChatContext.sendMessage)
     │
-    └──► Renders AI message bubble in ChatWindow
+    └──► Vercel AI message bubble in ChatWindow
 ```
 
 ---
 
-## Deployment
+## ☁️ Deployment
 
 ### Frontend → Vercel
 1. Push to GitHub
 2. Import the repository on [Vercel](https://vercel.com/), set **Root Directory** to `frontend/`
-3. Add environment variable: `VITE_API_URL=https://your-app.onrender.com`
+3. Add environment variable: `VITE_API_URL=https://ai-content-assistant-w2qt.vercel.app/
 4. Deploy
 
 ### Backend → Render
-1. Import the repository on [Render](https://render.com/), set **Root Directory** to `backend/`
-2. `render.yaml` configures the build and start commands automatically
-3. Add secret: `GROQ_API_KEY=gsk_...`
-4. Add: `CORS_ORIGINS=["https://your-app.vercel.app"]`
-5. Deploy
+1. Import the repository on [Vercel](https://vercel.com/), set **Root Directory** to `backend/`
+2. Add secret: `GROQ_API_KEY=gsk_...`
+3. Add: `CORS_ORIGINS=["(https://ai-content-assistant-akmal.vercel.app/)"]`
+4. Deploy
+
+**Live app:** [https://ai-content-assistant-akmal.vercel.app/](https://ai-content-assistant-akmal.vercel.app/)
 
 ---
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-| Layer      | Technology                                       |
-|------------|--------------------------------------------------|
-| Frontend   | React 19, Vite, Tailwind CSS, Axios, React Icons |
-| Backend    | Python 3.10+, FastAPI, Uvicorn, pydantic-settings|
-| AI         | Groq API — llama-3.3-70b-versatile               |
-| Deployment | Vercel (frontend) · Render (backend)             |
+| Layer      | Technology                                        |
+|------------|----------------------------------------------------|
+| Frontend   | React 19, Vite, Tailwind CSS, Axios, React Icons   |
+| Backend    | Python 3.10+, FastAPI, Uvicorn, pydantic-settings  |
+| AI         | Groq API — llama-3.3-70b-versatile                 |
+| Deployment | Vercel (frontend) · Vercel (backend)               |
 
 ---
 
-## Roadmap
+## 🗺️ Roadmap
 
 | Phase | Status | Description                                    |
-|-------|--------|------------------------------------------------|
-| 1     | ✅     | Project structure scaffold                     |
-| 2     | ✅     | Dev environment (React + FastAPI running)      |
-| 3     | ✅     | ChatGPT-style UI                               |
-| 4     | ✅     | Frontend ↔ Backend integration (mock)          |
-| 5     | ✅     | Groq AI integration                            |
-| 5.5   | ✅     | Debugging & stabilisation                      |
-| 6     | 🔜     | Chat history & conversation management         |
-| 7     | 🔜     | Authentication                                 |
-| 8     | 🔜     | Deployment hardening                           |
+|-------|--------|--------------------------------------------------|
+| 1     | ✅     | Project structure scaffold                       |
+| 2     | ✅     | Dev environment (React + FastAPI running)         |
+| 3     | ✅     | ChatGPT-style UI                                  |
+| 4     | ✅     | Frontend ↔ Backend integration (mock)             |
+| 5     | ✅     | Groq AI integration                               |
+| 5.5   | ✅     | Debugging & stabilisation                         |
+| 6     | 🔜     | Chat history & conversation management            |
+| 7     | 🔜     | Authentication                                    |
+| 8     | ✅     | Deployment hardening                              |
 
 ---
 
-## License
+<div align="center">
 
-MIT — see [LICENSE](./LICENSE)
+Muhammad Akmal made with ❤️ using React, FastAPI, and Groq API
+
+</div>
