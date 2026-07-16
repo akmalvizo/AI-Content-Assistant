@@ -1,6 +1,6 @@
 <div align="center">
 
-![AI Content Assistant Banner](docs/assets/banner.png)
+![AI Content Assistant Banner](docs/assets/banner.jpeg)
 
 # AI Content Assistant
 
@@ -13,7 +13,6 @@ A production-ready AI SaaS application for intelligent content generation, power
 [![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![Groq](https://img.shields.io/badge/Groq-LLM%20API-F55036?style=flat-square)](https://groq.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](./LICENSE)
 
 **🔗 Try it live: [ai-content-assistant-akmal.vercel.app](https://ai-content-assistant-akmal.vercel.app/)**
 
