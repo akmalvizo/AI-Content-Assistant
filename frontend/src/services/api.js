@@ -20,7 +20,9 @@ import axios from 'axios';
 
 // Empty string in dev → relative URLs → Vite proxy takes over
 // Full URL in prod    → direct requests to Render backend
-const BASE_URL = import.meta.env.VITE_API_URL ?? '';
+const BASE_URL = import.meta.env.VITE_API_URL ?? "";
+
+console.log("BASE_URL =", BASE_URL);
 
 const apiClient = axios.create({
   baseURL: BASE_URL,
